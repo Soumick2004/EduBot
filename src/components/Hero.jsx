@@ -1,7 +1,7 @@
 import React from 'react';
 import './Hero.css';
 
-const Hero = () => {
+const Hero = ({ onNavigate }) => {
   return (
     <section className="hero-section">
       <div className="hero-content">
@@ -10,6 +10,20 @@ const Hero = () => {
         <div className="cta-buttons">
           <button className="btn btn-primary">Try Demo</button>
           <button className="btn btn-secondary">Chat Now</button>
+        </div>
+        <div className="auth-buttons">
+          <button 
+            className="btn btn-login" 
+            onClick={() => onNavigate('login')}
+          >
+            Sign In
+          </button>
+          <button 
+            className="btn btn-signup" 
+            onClick={() => onNavigate('signup')}
+          >
+            Sign Up
+          </button>
         </div>
       </div>
       

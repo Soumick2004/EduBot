@@ -6,10 +6,10 @@ import Demo from '../../components/Demo';
 import Team from '../../components/Team';
 import Footer from '../../components/Footer';
 
-const ScholarIQApp = () => {
+const ScholarIQApp = ({ onNavigate }) => {
   return (
     <div className="scholar-iq-app">
-      <Hero />
+      <Hero onNavigate={onNavigate} />
       <Features />
       <Demo />
       <Team />
