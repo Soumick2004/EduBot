@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import './Chatbot.css';
+import { uploadChatResponse } from '/src/firebase/uploadChatResponse'; // adjust path
+import { auth } from '/src/firebase/auth';
 
 const Chatbot = ({ onNavigate }) => {
   const [inputValue, setInputValue] = useState('');
@@ -7,67 +9,63 @@ const Chatbot = ({ onNavigate }) => {
   const [messages, setMessages] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleInputChange = (e) => {
-    setInputValue(e.target.value);
-  };
+  const handleInputChange = (e) => setInputValue(e.target.value);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (inputValue.trim()) {
-      const userMessage = {
-        id: Date.now(),
-        text: inputValue,
-        sender: 'user',
+    if (!inputValue.trim()) return;
+
+    const userMessage = {
+      id: Date.now(),
+      text: inputValue,
+      sender: 'user',
+      timestamp: new Date()
+    };
+    setMessages([...messages, userMessage]);
+    setInputValue('');
+    setIsLoading(true);
+
+    try {
+      // Call backend for text summary
+      const response = await fetch('http://localhost:5000/summarize/text', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: inputValue })
+      });
+      const data = await response.json();
+
+      const botMessage = {
+        id: Date.now() + 1,
+        text: data.summary,
+        sender: 'bot',
         timestamp: new Date()
       };
-      setMessages([...messages, userMessage]);
-      setInputValue('');
-      setIsLoading(true);
+      setMessages(prev => [...prev, botMessage]);
 
+      // Upload bot response to Firebase
       try {
-        const response = await fetch('http://localhost:5000/summarize/text', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ text: inputValue }),
-        });
-
-        const data = await response.json();
-        
-        const botMessage = {
-          id: Date.now() + 1,
-          text: data.summary,
-          sender: 'bot',
-          timestamp: new Date()
-        };
-        setMessages(prev => [...prev, botMessage]);
-      } catch (error) {
-        console.error('Error:', error);
-        let errorText = 'Sorry, I encountered an error. Please try again.';
-        
-        if (error.message.includes('Failed to fetch')) {
-          errorText = 'Cannot connect to the backend server. Please make sure the backend is running on port 5000.';
-        } else if (error.message.includes('NetworkError')) {
-          errorText = 'Network error. Please check your internet connection.';
-        }
-        
-        const errorMessage = {
-          id: Date.now() + 1,
-          text: errorText,
-          sender: 'bot',
-          timestamp: new Date()
-        };
-        setMessages(prev => [...prev, errorMessage]);
-      } finally {
-        setIsLoading(false);
+        const uid = auth.currentUser ? auth.currentUser.uid : 'guest';
+        await uploadChatResponse(uid, inputValue, data.summary);
+      } catch (storageError) {
+        console.error('Firebase Storage upload error:', storageError);
       }
+    } catch (error) {
+      console.error('Error:', error);
+      const errorText = error.message.includes('Failed to fetch') 
+        ? 'Cannot connect to backend server. Make sure it is running on port 5000.'
+        : 'Sorry, I encountered an error. Please try again.';
+      setMessages(prev => [...prev, {
+        id: Date.now() + 1,
+        text: errorText,
+        sender: 'bot',
+        timestamp: new Date()
+      }]);
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const handleUploadClick = () => {
-    setShowUploadModal(true);
-  };
+  const handleUploadClick = () => setShowUploadModal(true);
 
   const handleUploadOption = async (type) => {
     setShowUploadModal(false);
@@ -78,21 +76,15 @@ const Chatbot = ({ onNavigate }) => {
       input.accept = '.pdf';
       input.onchange = async (e) => {
         const file = e.target.files[0];
-        if (file) {
-          await handlePdfUpload(file);
-        }
+        if (file) await handlePdfUpload(file);
       };
       input.click();
     } else if (type === 'youtube') {
       const url = prompt('Enter YouTube URL:');
-      if (url) {
-        await handleYoutubeUpload(url);
-      }
+      if (url) await handleYoutubeUpload(url);
     } else if (type === 'text') {
       const text = prompt('Enter or paste your text:');
-      if (text) {
-        await handleTextUpload(text);
-      }
+      if (text) await handleTextUpload(text);
     }
   };
 
@@ -104,11 +96,10 @@ const Chatbot = ({ onNavigate }) => {
     try {
       const response = await fetch('http://localhost:5000/summarize/pdf', {
         method: 'POST',
-        body: formData,
+        body: formData
       });
-
       const data = await response.json();
-      
+
       const botMessage = {
         id: Date.now(),
         text: `PDF Summary: ${data.summary}`,
@@ -116,21 +107,22 @@ const Chatbot = ({ onNavigate }) => {
         timestamp: new Date()
       };
       setMessages(prev => [...prev, botMessage]);
+
+      // Upload to Firebase
+      try {
+        const uid = auth.currentUser ? auth.currentUser.uid : 'guest';
+        await uploadChatResponse(uid, file.name, data.summary);
+      } catch (storageError) {
+        console.error('Firebase Storage upload error:', storageError);
+      }
     } catch (error) {
       console.error('Error:', error);
-      let errorText = 'Sorry, I encountered an error processing the PDF. Please try again.';
-      
-      if (error.message.includes('Failed to fetch')) {
-        errorText = 'Cannot connect to the backend server. Please make sure the backend is running on port 5000.';
-      }
-      
-      const errorMessage = {
+      setMessages(prev => [...prev, {
         id: Date.now(),
-        text: errorText,
+        text: 'Error processing PDF. Please try again.',
         sender: 'bot',
         timestamp: new Date()
-      };
-      setMessages(prev => [...prev, errorMessage]);
+      }]);
     } finally {
       setIsLoading(false);
     }
@@ -138,18 +130,14 @@ const Chatbot = ({ onNavigate }) => {
 
   const handleYoutubeUpload = async (url) => {
     setIsLoading(true);
-
     try {
       const response = await fetch('http://localhost:5000/summarize/youtube', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ url }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url })
       });
-
       const data = await response.json();
-      
+
       const botMessage = {
         id: Date.now(),
         text: `YouTube Video Summary: ${data.summary}`,
@@ -157,15 +145,22 @@ const Chatbot = ({ onNavigate }) => {
         timestamp: new Date()
       };
       setMessages(prev => [...prev, botMessage]);
+
+      // Upload to Firebase
+      try {
+        const uid = auth.currentUser ? auth.currentUser.uid : 'guest';
+        await uploadChatResponse(uid, url, data.summary);
+      } catch (storageError) {
+        console.error('Firebase Storage upload error:', storageError);
+      }
     } catch (error) {
       console.error('Error:', error);
-      const errorMessage = {
+      setMessages(prev => [...prev, {
         id: Date.now(),
-        text: 'Sorry, I encountered an error processing the YouTube video. Please try again.',
+        text: 'Error processing YouTube video. Please try again.',
         sender: 'bot',
         timestamp: new Date()
-      };
-      setMessages(prev => [...prev, errorMessage]);
+      }]);
     } finally {
       setIsLoading(false);
     }
@@ -173,18 +168,14 @@ const Chatbot = ({ onNavigate }) => {
 
   const handleTextUpload = async (text) => {
     setIsLoading(true);
-
     try {
       const response = await fetch('http://localhost:5000/summarize/text', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ text }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text })
       });
-
       const data = await response.json();
-      
+
       const botMessage = {
         id: Date.now(),
         text: `Text Summary: ${data.summary}`,
@@ -192,33 +183,33 @@ const Chatbot = ({ onNavigate }) => {
         timestamp: new Date()
       };
       setMessages(prev => [...prev, botMessage]);
+
+      // Upload to Firebase
+      try {
+        const uid = auth.currentUser ? auth.currentUser.uid : 'guest';
+        await uploadChatResponse(uid, text, data.summary);
+      } catch (storageError) {
+        console.error('Firebase Storage upload error:', storageError);
+      }
     } catch (error) {
       console.error('Error:', error);
-      const errorMessage = {
+      setMessages(prev => [...prev, {
         id: Date.now(),
-        text: 'Sorry, I encountered an error processing the text. Please try again.',
+        text: 'Error processing text. Please try again.',
         sender: 'bot',
         timestamp: new Date()
-      };
-      setMessages(prev => [...prev, errorMessage]);
+      }]);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const closeModal = () => {
-    setShowUploadModal(false);
-  };
+  const closeModal = () => setShowUploadModal(false);
 
   return (
     <div className="chatbot-container">
       <div className="chatbot-header">
-        <button 
-          className="back-button" 
-          onClick={() => onNavigate('landing')}
-        >
-          ← Back to Home
-        </button>
+        <button className="back-button" onClick={() => onNavigate('landing')}>← Back to Home</button>
         <h1>ScholarIQ Chatbot</h1>
       </div>
 
@@ -229,26 +220,16 @@ const Chatbot = ({ onNavigate }) => {
               <h2>Welcome to ScholarIQ!</h2>
               <p>Ask me anything about your academic research, or upload documents to get started.</p>
             </div>
-          ) : (
-            messages.map((message) => (
-              <div key={message.id} className={`message ${message.sender}`}>
-                <div className="message-content">
-                  {message.text}
-                </div>
-                <div className="message-time">
-                  {message.timestamp.toLocaleTimeString()}
-                </div>
-              </div>
-            ))
-          )}
+          ) : messages.map(msg => (
+            <div key={msg.id} className={`message ${msg.sender}`}>
+              <div className="message-content">{msg.text}</div>
+              <div className="message-time">{msg.timestamp.toLocaleTimeString()}</div>
+            </div>
+          ))}
           {isLoading && (
             <div className="message bot">
               <div className="message-content loading">
-                <div className="loading-dots">
-                  <span></span>
-                  <span></span>
-                  <span></span>
-                </div>
+                <div className="loading-dots"><span></span><span></span><span></span></div>
                 <span>ScholarIQ is thinking...</span>
               </div>
             </div>
@@ -258,24 +239,9 @@ const Chatbot = ({ onNavigate }) => {
         <div className="input-container">
           <form onSubmit={handleSubmit} className="input-form">
             <div className="input-wrapper">
-              <button
-                type="button"
-                className="upload-button"
-                onClick={handleUploadClick}
-                title="Upload files"
-              >
-                +
-              </button>
-              <input
-                type="text"
-                value={inputValue}
-                onChange={handleInputChange}
-                placeholder="Ask anything"
-                className="chat-input"
-              />
-              <button type="submit" className="send-button">
-                Send
-              </button>
+              <button type="button" className="upload-button" onClick={handleUploadClick} title="Upload files">+</button>
+              <input type="text" value={inputValue} onChange={handleInputChange} placeholder="Ask anything" className="chat-input"/>
+              <button type="submit" className="send-button">Send</button>
             </div>
           </form>
         </div>
@@ -289,26 +255,17 @@ const Chatbot = ({ onNavigate }) => {
               <button className="close-button" onClick={closeModal}>×</button>
             </div>
             <div className="upload-options">
-              <button 
-                className="upload-option"
-                onClick={() => handleUploadOption('pdf')}
-              >
+              <button className="upload-option" onClick={() => handleUploadOption('pdf')}>
                 <div className="upload-icon">📄</div>
                 <span>PDF Upload</span>
                 <small>Upload research papers, documents</small>
               </button>
-              <button 
-                className="upload-option"
-                onClick={() => handleUploadOption('youtube')}
-              >
+              <button className="upload-option" onClick={() => handleUploadOption('youtube')}>
                 <div className="upload-icon">📺</div>
                 <span>YouTube Link</span>
                 <small>Add video content for analysis</small>
               </button>
-              <button 
-                className="upload-option"
-                onClick={() => handleUploadOption('text')}
-              >
+              <button className="upload-option" onClick={() => handleUploadOption('text')}>
                 <div className="upload-icon">📝</div>
                 <span>Text Upload</span>
                 <small>Paste or type text content</small>
