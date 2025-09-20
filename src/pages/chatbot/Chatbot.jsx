@@ -45,7 +45,7 @@ const Chatbot = ({ onNavigate }) => {
       // Upload bot response to Firebase
       try {
         const uid = auth.currentUser ? auth.currentUser.uid : 'guest';
-        await uploadChatResponse(uid, inputValue, data.summary);
+        await uploadChatResponse(inputValue, data.summary);
       } catch (storageError) {
         console.error('Firebase Storage upload error:', storageError);
       }
@@ -111,7 +111,8 @@ const Chatbot = ({ onNavigate }) => {
       // Upload to Firebase
       try {
         const uid = auth.currentUser ? auth.currentUser.uid : 'guest';
-        await uploadChatResponse(uid, file.name, data.summary);
+        await uploadChatResponse(file.name, data.summary);
+
       } catch (storageError) {
         console.error('Firebase Storage upload error:', storageError);
       }
@@ -149,7 +150,8 @@ const Chatbot = ({ onNavigate }) => {
       // Upload to Firebase
       try {
         const uid = auth.currentUser ? auth.currentUser.uid : 'guest';
-        await uploadChatResponse(uid, url, data.summary);
+        await uploadChatResponse(url, data.summary);
+
       } catch (storageError) {
         console.error('Firebase Storage upload error:', storageError);
       }
@@ -187,7 +189,8 @@ const Chatbot = ({ onNavigate }) => {
       // Upload to Firebase
       try {
         const uid = auth.currentUser ? auth.currentUser.uid : 'guest';
-        await uploadChatResponse(uid, text, data.summary);
+        await uploadChatResponse(text, data.summary);
+
       } catch (storageError) {
         console.error('Firebase Storage upload error:', storageError);
       }
@@ -209,15 +212,20 @@ const Chatbot = ({ onNavigate }) => {
   return (
     <div className="chatbot-container">
       <div className="chatbot-header">
-        <button className="back-button" onClick={() => onNavigate('landing')}>← Back to Home</button>
-        <h1>ScholarIQ Chatbot</h1>
+        <button 
+          className="back-button" 
+          onClick={() => onNavigate('landing')}
+        >
+          ← Back to Home
+        </button>
+        <h1>EduBot Chatbot</h1>
       </div>
 
       <div className="chatbot-main">
         <div className="messages-container">
           {messages.length === 0 ? (
             <div className="welcome-message">
-              <h2>Welcome to ScholarIQ!</h2>
+              <h2>Welcome to EduBOT!</h2>
               <p>Ask me anything about your academic research, or upload documents to get started.</p>
             </div>
           ) : messages.map(msg => (
@@ -229,8 +237,12 @@ const Chatbot = ({ onNavigate }) => {
           {isLoading && (
             <div className="message bot">
               <div className="message-content loading">
-                <div className="loading-dots"><span></span><span></span><span></span></div>
-                <span>ScholarIQ is thinking...</span>
+                <div className="loading-dots">
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                </div>
+                <span>EduBot is thinking...</span>
               </div>
             </div>
           )}

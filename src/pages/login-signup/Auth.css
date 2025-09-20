@@ -8,6 +8,7 @@
   padding: 20px;
   position: relative;
   overflow: hidden;
+  color: #000000; /* Set default text color to black */
 }
 
 .auth-container::before {
@@ -35,6 +36,7 @@
   z-index: 1;
   box-sizing: border-box;
   overflow: hidden;
+  color: #000000; /* Ensure card text is black */
 }
 
 /* Auth Header */
@@ -96,6 +98,7 @@
   background: #fff;
   width: 100%;
   box-sizing: border-box;
+  color: #000000; /* Ensure input text is black */
 }
 
 .form-group input:focus {

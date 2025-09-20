@@ -1,6 +1,6 @@
-# ScholarIQ Backend Setup
+# EduBOT Backend Setup
 
-This document explains how to set up and run the Python Flask backend for ScholarIQ.
+This document explains how to set up and run the Python Flask backend for EduBOT.
 
 ## Prerequisites
 

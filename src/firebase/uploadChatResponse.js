@@ -1,17 +1,22 @@
-// src/firebase/uploadChatResponse.js
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
-import { db } from "./config";
+import { getFirestore, collection, addDoc, serverTimestamp } from "firebase/firestore";
+import app from "./config";
+import { auth } from "./auth";
 
-export const uploadChatResponse = async (uid, userInput, botResponse) => {
+const db = getFirestore(app);
+
+export const uploadChatResponse = async (userInput, botResponse) => {
   try {
-    await addDoc(collection(db, "chat_responses"), {
-      uid: uid || "guest",
+    const uid = auth.currentUser ? auth.currentUser.uid : "guest";
+
+    await addDoc(collection(db, "chatResponses"), {
+      uid,
       userInput,
       botResponse,
-      createdAt: serverTimestamp(),
+      createdAt: serverTimestamp()
     });
-    console.log("Chat saved in Firestore ✅");
+
+    console.log("✅ Chat saved to Firestore");
   } catch (error) {
-    console.error("Error saving chat:", error);
+    console.error("❌ Error saving chat:", error);
   }
 };

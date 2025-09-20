@@ -6,7 +6,7 @@ const Demo = () => {
   const [messages, setMessages] = useState([
     {
       id: 1,
-      content: "Welcome to ScholarIQ! How can I help you with your research today?",
+      content: "Welcome to EduBOT! How can I help you with your research today?",
       sender: "bot"
     },
     {
@@ -57,11 +57,11 @@ const Demo = () => {
     <section className="demo-section">
       <div className="container">
         <h2>Try the Demo</h2>
-        <p>Experience the power of ScholarIQ with our interactive demo</p>
+        <p>Experience the power of EduBOT with our interactive demo</p>
         
         <div className="demo-container">
           <div className="chat-header">
-            <div className="chat-title">ScholarIQ Chat Assistant</div>
+            <div className="chat-title">EduBOT Chat Assistant</div>
             <div className="chat-status">
               <span className="status-indicator"></span>
               <span>Online</span>

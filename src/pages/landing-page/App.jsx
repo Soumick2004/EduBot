@@ -6,7 +6,7 @@ import Demo from '../../components/Demo';
 import Team from '../../components/Team';
 import Footer from '../../components/Footer';
 
-const ScholarIQApp = ({ onNavigate }) => {
+const EduBOTApp = ({ onNavigate }) => {
   return (
     <div className="scholar-iq-app">
       {/* Floating Background Elements */}
@@ -23,4 +23,4 @@ const ScholarIQApp = ({ onNavigate }) => {
   );
 };
 
-export default ScholarIQApp;
+export default EduBOTApp;
