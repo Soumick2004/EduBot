@@ -8,8 +8,18 @@ const Hero = ({ onNavigate }) => {
         <h1>ScholarIQ: Your AI Academic Assistant</h1>
         <p className="tagline">Ask questions. Get answers. Unlock research.</p>
         <div className="cta-buttons">
-          <button className="btn btn-primary">Try Demo</button>
-          <button className="btn btn-secondary">Chat Now</button>
+          <button 
+            className="btn btn-primary"
+            onClick={() => onNavigate('chatbot')}
+          >
+            Try Demo
+          </button>
+          <button 
+            className="btn btn-secondary"
+            onClick={() => onNavigate('chatbot')}
+          >
+            Chat Now
+          </button>
         </div>
         <div className="auth-buttons">
           <button 
