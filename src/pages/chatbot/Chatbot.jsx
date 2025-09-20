@@ -5,22 +5,63 @@ const Chatbot = ({ onNavigate }) => {
   const [inputValue, setInputValue] = useState('');
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [messages, setMessages] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleInputChange = (e) => {
     setInputValue(e.target.value);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (inputValue.trim()) {
-      const newMessage = {
+      const userMessage = {
         id: Date.now(),
         text: inputValue,
         sender: 'user',
         timestamp: new Date()
       };
-      setMessages([...messages, newMessage]);
+      setMessages([...messages, userMessage]);
       setInputValue('');
+      setIsLoading(true);
+
+      try {
+        const response = await fetch('http://localhost:5000/summarize/text', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ text: inputValue }),
+        });
+
+        const data = await response.json();
+        
+        const botMessage = {
+          id: Date.now() + 1,
+          text: data.summary,
+          sender: 'bot',
+          timestamp: new Date()
+        };
+        setMessages(prev => [...prev, botMessage]);
+      } catch (error) {
+        console.error('Error:', error);
+        let errorText = 'Sorry, I encountered an error. Please try again.';
+        
+        if (error.message.includes('Failed to fetch')) {
+          errorText = 'Cannot connect to the backend server. Please make sure the backend is running on port 5000.';
+        } else if (error.message.includes('NetworkError')) {
+          errorText = 'Network error. Please check your internet connection.';
+        }
+        
+        const errorMessage = {
+          id: Date.now() + 1,
+          text: errorText,
+          sender: 'bot',
+          timestamp: new Date()
+        };
+        setMessages(prev => [...prev, errorMessage]);
+      } finally {
+        setIsLoading(false);
+      }
     }
   };
 
@@ -28,10 +69,141 @@ const Chatbot = ({ onNavigate }) => {
     setShowUploadModal(true);
   };
 
-  const handleUploadOption = (type) => {
-    console.log(`Selected upload type: ${type}`);
+  const handleUploadOption = async (type) => {
     setShowUploadModal(false);
-    // Handle different upload types here
+    
+    if (type === 'pdf') {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = '.pdf';
+      input.onchange = async (e) => {
+        const file = e.target.files[0];
+        if (file) {
+          await handlePdfUpload(file);
+        }
+      };
+      input.click();
+    } else if (type === 'youtube') {
+      const url = prompt('Enter YouTube URL:');
+      if (url) {
+        await handleYoutubeUpload(url);
+      }
+    } else if (type === 'text') {
+      const text = prompt('Enter or paste your text:');
+      if (text) {
+        await handleTextUpload(text);
+      }
+    }
+  };
+
+  const handlePdfUpload = async (file) => {
+    setIsLoading(true);
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const response = await fetch('http://localhost:5000/summarize/pdf', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await response.json();
+      
+      const botMessage = {
+        id: Date.now(),
+        text: `PDF Summary: ${data.summary}`,
+        sender: 'bot',
+        timestamp: new Date()
+      };
+      setMessages(prev => [...prev, botMessage]);
+    } catch (error) {
+      console.error('Error:', error);
+      let errorText = 'Sorry, I encountered an error processing the PDF. Please try again.';
+      
+      if (error.message.includes('Failed to fetch')) {
+        errorText = 'Cannot connect to the backend server. Please make sure the backend is running on port 5000.';
+      }
+      
+      const errorMessage = {
+        id: Date.now(),
+        text: errorText,
+        sender: 'bot',
+        timestamp: new Date()
+      };
+      setMessages(prev => [...prev, errorMessage]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleYoutubeUpload = async (url) => {
+    setIsLoading(true);
+
+    try {
+      const response = await fetch('http://localhost:5000/summarize/youtube', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ url }),
+      });
+
+      const data = await response.json();
+      
+      const botMessage = {
+        id: Date.now(),
+        text: `YouTube Video Summary: ${data.summary}`,
+        sender: 'bot',
+        timestamp: new Date()
+      };
+      setMessages(prev => [...prev, botMessage]);
+    } catch (error) {
+      console.error('Error:', error);
+      const errorMessage = {
+        id: Date.now(),
+        text: 'Sorry, I encountered an error processing the YouTube video. Please try again.',
+        sender: 'bot',
+        timestamp: new Date()
+      };
+      setMessages(prev => [...prev, errorMessage]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleTextUpload = async (text) => {
+    setIsLoading(true);
+
+    try {
+      const response = await fetch('http://localhost:5000/summarize/text', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ text }),
+      });
+
+      const data = await response.json();
+      
+      const botMessage = {
+        id: Date.now(),
+        text: `Text Summary: ${data.summary}`,
+        sender: 'bot',
+        timestamp: new Date()
+      };
+      setMessages(prev => [...prev, botMessage]);
+    } catch (error) {
+      console.error('Error:', error);
+      const errorMessage = {
+        id: Date.now(),
+        text: 'Sorry, I encountered an error processing the text. Please try again.',
+        sender: 'bot',
+        timestamp: new Date()
+      };
+      setMessages(prev => [...prev, errorMessage]);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const closeModal = () => {
@@ -68,6 +240,18 @@ const Chatbot = ({ onNavigate }) => {
                 </div>
               </div>
             ))
+          )}
+          {isLoading && (
+            <div className="message bot">
+              <div className="message-content loading">
+                <div className="loading-dots">
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                </div>
+                <span>ScholarIQ is thinking...</span>
+              </div>
+            </div>
           )}
         </div>
 

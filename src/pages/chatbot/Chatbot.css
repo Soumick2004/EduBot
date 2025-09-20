@@ -126,6 +126,46 @@
   color: white;
 }
 
+.message-content.loading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #f8f9ff;
+  color: #667eea;
+}
+
+.loading-dots {
+  display: flex;
+  gap: 4px;
+}
+
+.loading-dots span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #667eea;
+  animation: loadingDots 1.4s infinite ease-in-out both;
+}
+
+.loading-dots span:nth-child(1) {
+  animation-delay: -0.32s;
+}
+
+.loading-dots span:nth-child(2) {
+  animation-delay: -0.16s;
+}
+
+@keyframes loadingDots {
+  0%, 80%, 100% {
+    transform: scale(0);
+    opacity: 0.5;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
 .message-time {
   font-size: 0.8rem;
   color: rgba(255, 255, 255, 0.7);
