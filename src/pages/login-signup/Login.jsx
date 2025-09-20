@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './Auth.css';
+import { login } from '/src/firebase/auth'; // path to your Firebase auth file
 
 const Login = ({ onNavigate }) => {
   const [formData, setFormData] = useState({
@@ -14,11 +15,26 @@ const Login = ({ onNavigate }) => {
     });
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log('Login data:', formData);
-    // Add login logic here
-  };
+  // const handleSubmit = (e) => {
+  //   e.preventDefault();
+  //   console.log('Login data:', formData);
+  //   // Add login logic here
+  // };
+
+  const handleSubmit = async (e) => {
+  e.preventDefault();
+  const { email, password } = formData;
+
+  try {
+    const userCredential = await login(email, password);
+    console.log('User logged in:', userCredential.user);
+    // You can navigate to dashboard or landing page
+    onNavigate('dashboard'); 
+  } catch (error) {
+    console.error('Login error:', error.message);
+    alert(error.message); // show error to user
+  }
+};
 
   return (
     <div className="auth-container">

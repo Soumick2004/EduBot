@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './Auth.css';
+import { signup } from '/src/firebase/auth'; // import your Firebase signup function
 
 const Signup = ({ onNavigate }) => {
   const [formData, setFormData] = useState({
@@ -17,14 +18,26 @@ const Signup = ({ onNavigate }) => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    
     if (formData.password !== formData.confirmPassword) {
       alert('Passwords do not match');
       return;
     }
-    console.log('Signup data:', formData);
-    // Add signup logic here
+
+    try {
+      // Create user in Firebase
+      const userCredential = await signup(formData.email, formData.password);
+      console.log('User signed up:', userCredential.user);
+      alert('Account created successfully!');
+      
+      // Optionally, navigate to login or dashboard
+      onNavigate('login');
+    } catch (error) {
+      console.error('Signup error:', error.message);
+      alert(error.message);
+    }
   };
 
   return (
