@@ -9,6 +9,11 @@ import Footer from '../../components/Footer';
 const ScholarIQApp = ({ onNavigate }) => {
   return (
     <div className="scholar-iq-app">
+      {/* Floating Background Elements */}
+      <div className="floating-element"></div>
+      <div className="floating-element"></div>
+      <div className="floating-element"></div>
+      
       <Hero onNavigate={onNavigate} />
       <Features />
       <Demo />
