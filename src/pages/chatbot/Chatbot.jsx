@@ -219,14 +219,14 @@ const Chatbot = ({ onNavigate }) => {
         >
           ← Back to Home
         </button>
-        <h1>ScholarIQ Chatbot</h1>
+        <h1>EduBOT Chatbot</h1>
       </div>
 
       <div className="chatbot-main">
         <div className="messages-container">
           {messages.length === 0 ? (
             <div className="welcome-message">
-              <h2>Welcome to ScholarIQ!</h2>
+              <h2>Welcome to EduBOT!</h2>
               <p>Ask me anything about your academic research, or upload documents to get started.</p>
             </div>
           ) : (
@@ -249,7 +249,7 @@ const Chatbot = ({ onNavigate }) => {
                   <span></span>
                   <span></span>
                 </div>
-                <span>ScholarIQ is thinking...</span>
+                <span>EduBOT is thinking...</span>
               </div>
             </div>
           )}

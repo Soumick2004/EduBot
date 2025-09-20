@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Setup script for ScholarIQ Backend
+# Setup script for EduBOT Backend
 This script helps set up the Python backend environment
 """
 
@@ -29,7 +29,7 @@ def create_env_file():
         print("✅ .env file already exists.")
 
 def main():
-    print("🚀 Setting up ScholarIQ Backend...")
+    print("🚀 Setting up EduBOT Backend...")
     print("=" * 50)
     
     # Install requirements

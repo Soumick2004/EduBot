@@ -99,40 +99,41 @@
 .gradient-circle {
   position: absolute;
   border-radius: 50%;
-  filter: blur(60px);
-  opacity: 0.4;
+  filter: blur(80px);
+  opacity: 0.6;
+  transition: all 0.3s ease;
 }
 
 .circle-1 {
   top: -10%;
   left: -10%;
-  width: 500px;
-  height: 500px;
-  background: linear-gradient(135deg, #3A86FF, rgba(58, 134, 255, 0.3), transparent);
+  width: 600px;
+  height: 600px;
+  background: linear-gradient(135deg, #3A86FF, rgba(58, 134, 255, 0.2), transparent);
   animation: float 8s ease-in-out infinite, glow 12s ease-in-out infinite;
-  box-shadow: 0 0 100px rgba(58, 134, 255, 0.3);
+  box-shadow: 0 0 150px rgba(58, 134, 255, 0.5), 0 0 100px rgba(58, 134, 255, 0.3);
 }
 
 .circle-2 {
   bottom: -10%;
   right: -10%;
-  width: 400px;
-  height: 400px;
-  background: linear-gradient(135deg, #E0A82E, rgba(224, 168, 46, 0.3), transparent);
+  width: 500px;
+  height: 500px;
+  background: linear-gradient(135deg, #E0A82E, rgba(224, 168, 46, 0.2), transparent);
   animation: float 10s ease-in-out infinite reverse, glow 15s ease-in-out infinite;
-  box-shadow: 0 0 80px rgba(224, 168, 46, 0.3);
+  box-shadow: 0 0 120px rgba(224, 168, 46, 0.5), 0 0 80px rgba(224, 168, 46, 0.3);
 }
 
 .circle-3 {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 600px;
-  height: 600px;
-  background: linear-gradient(135deg, #3A86FF 20%, #E0A82E 80%);
-  opacity: 0.3;
-  animation: pulse 15s ease-in-out infinite, rotate 20s linear infinite;
-  box-shadow: 0 0 120px rgba(58, 134, 255, 0.2), 0 0 80px rgba(224, 168, 46, 0.2);
+  width: 800px;
+  height: 800px;
+  background: linear-gradient(135deg, #3A86FF 30%, #E0A82E 70%);
+  opacity: 0.4;
+  animation: pulse 12s ease-in-out infinite, rotate 20s linear infinite;
+  box-shadow: 0 0 180px rgba(58, 134, 255, 0.4), 0 0 120px rgba(224, 168, 46, 0.4);
 }
 
 /* Animations */
@@ -169,12 +170,12 @@
 
 @keyframes glow {
   0%, 100% {
-    opacity: 0.3;
-    filter: blur(60px);
+    opacity: 0.4;
+    filter: blur(80px);
   }
   50% {
-    opacity: 0.6;
-    filter: blur(80px);
+    opacity: 0.8;
+    filter: blur(120px);
   }
 }
 
@@ -208,22 +209,25 @@
   }
   
   .gradient-circle {
-    filter: blur(40px);
+    filter: blur(50px);
   }
   
   .circle-1 {
-    width: 300px;
-    height: 300px;
+    width: 400px;
+    height: 400px;
+    box-shadow: 0 0 100px rgba(58, 134, 255, 0.4), 0 0 70px rgba(58, 134, 255, 0.2);
   }
   
   .circle-2 {
-    width: 250px;
-    height: 250px;
+    width: 350px;
+    height: 350px;
+    box-shadow: 0 0 80px rgba(224, 168, 46, 0.4), 0 0 50px rgba(224, 168, 46, 0.2);
   }
   
   .circle-3 {
-    width: 400px;
-    height: 400px;
+    width: 500px;
+    height: 500px;
+    box-shadow: 0 0 120px rgba(58, 134, 255, 0.3), 0 0 80px rgba(224, 168, 46, 0.3);
   }
 }
 

@@ -5,7 +5,7 @@ const Hero = ({ onNavigate }) => {
   return (
     <section className="hero-section">
       <div className="hero-content">
-        <h1>ScholarIQ: Your AI Academic Assistant</h1>
+        <h1>EduBOT: Your AI Academic Assistant</h1>
         <p className="tagline">Ask questions. Get answers. Unlock research.</p>
         <div className="cta-buttons">
           <button 

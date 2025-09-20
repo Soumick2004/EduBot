@@ -45,7 +45,7 @@ const Signup = ({ onNavigate }) => {
       <div className="auth-card">
         <div className="auth-header">
           <h1>Create Account</h1>
-          <p>Join ScholarIQ and start your academic journey</p>
+          <p>Join EduBOT and start your academic journey</p>
         </div>
         
         <form onSubmit={handleSubmit} className="auth-form">

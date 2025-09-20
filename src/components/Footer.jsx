@@ -8,7 +8,7 @@ const Footer = () => {
       <div className="container">
         <div className="footer-content">
           <div className="footer-logo">
-            <h3>ScholarIQ</h3>
+            <h3>EduBOT</h3>
             <p>Your AI Academic Assistant</p>
           </div>
           
@@ -54,7 +54,7 @@ const Footer = () => {
         
         <div className="footer-bottom">
           <div className="footer-divider"></div>
-          <p>© 2025 ScholarIQ. Built with ❤️ for students & researchers.</p>
+          <p>© 2025 EduBOT. Built with ❤️ for students & researchers.</p>
         </div>
       </div>
     </footer>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import ScholarIQApp from './pages/landing-page/App';
+import EduBOTApp from './pages/landing-page/App';
 import Login from './pages/login-signup/Login';
 import Signup from './pages/login-signup/Signup';
 import Chatbot from './pages/chatbot/Chatbot';
@@ -17,7 +17,7 @@ function App() {
       case 'chatbot':
         return <Chatbot onNavigate={setCurrentPage} />;
       default:
-        return <ScholarIQApp onNavigate={setCurrentPage} />;
+        return <EduBOTApp onNavigate={setCurrentPage} />;
     }
   };
 

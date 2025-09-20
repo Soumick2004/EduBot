@@ -6,36 +6,25 @@ const Team = () => {
   const teamMembers = [
     {
       id: 1,
-      name: "Dr. Sarah Chen",
-      role: "Lead Researcher",
-      avatar: "SC"
+      name: "Suthirtha Dey",
+      // role: "Lead Researcher",
+      avatar: "SD"
     },
     {
       id: 2,
-      name: "Alex Johnson",
-      role: "AI Engineer",
-      avatar: "AJ"
+      name: "Soumick Samanta",
+      // role: "AI Engineer",
+      avatar: "SS"
     },
     {
       id: 3,
-      name: "Maria Rodriguez",
-      role: "UX Designer",
-      avatar: "MR"
-    },
-    {
-      id: 4,
-      name: "James Wilson",
-      role: "Backend Developer",
-      avatar: "JW"
+      name: "Tanushree Mandal",
+      // role: "UX Designer",
+      avatar: "TM"
     }
   ];
 
-  const acknowledgments = [
-    { id: 1, name: "OpenAI Research" },
-    { id: 2, name: "MIT Academic Labs" },
-    { id: 3, name: "Google Scholar" },
-    { id: 4, name: "arXiv" }
-  ];
+
 
   return (
     <section className="team-section">
@@ -62,19 +51,6 @@ const Team = () => {
               <p className="team-role">{member.role}</p>
             </motion.div>
           ))}
-        </div>
-        
-        <div className="acknowledgments-section">
-          <h3>Acknowledgments</h3>
-          <p>We'd like to thank our partners and supporters:</p>
-          
-          <div className="acknowledgments-logos">
-            {acknowledgments.map((org) => (
-              <div key={org.id} className="org-logo">
-                {org.name}
-              </div>
-            ))}
-          </div>
         </div>
       </div>
     </section>

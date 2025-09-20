@@ -19,13 +19,9 @@ const Features = () => {
       icon: <FileText size={32} />,
       title: "PDF Summarizer",
       description: "Get key insights instantly"
-    },
-    {
-      icon: <BookOpen size={32} />,
-      title: "Citation Helper",
-      description: "Generate quick references"
     }
   ];
+
 
   return (
     <section className="features-section">
